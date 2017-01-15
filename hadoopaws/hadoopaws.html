@@ -1,0 +1,377 @@
+<!DOCTYPE HTML>
+<!--
+	Iridium by TEMPLATED
+    templated.co @templatedco
+    Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html>
+	<head>
+		<title>Hadoop on AWS</title>
+		
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-panels.min.js"></script>
+		<script src="js/init.js"></script>
+		<noscript>
+			<link rel="stylesheet" href="css/skel-noscript.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-desktop.css" />
+		</noscript>
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
+	</head>
+	<body>
+
+		<!-- Header -->
+		<div id="header">
+			<div class="container"> 
+				
+				<!-- Logo -->
+				<div id="logo">
+					<h1><a href="#">HADOOP CLUSTER</a></h1>
+					<span>SETTING UP A HADOOP CLUSTER IN THE CLOUD</span>
+				</div>
+				
+				<!-- Nav -->
+				
+			</div>
+		</div>
+
+		<!-- Main -->
+		<div id="main">
+			<div class="container">
+				<div class="row"> 
+
+					<!-- Content -->
+					<div id="content" class="8u skel-cell-important">
+						<section>
+							<header>
+								<h2>Setting up a Hadoop cluster</h2>
+								<span class="byline">A 4 node Hadoop Cluster implementation on Amazon Webservice EC2 </span>
+							</header>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In this tutorial we will be setting up a 4 node Hadoop cluster on the cloud. For a 4 node cluster we need 4 machines right? Amazon has a free tier service which we can utilize for this purpose. We can create 4 amazon EC2 instances each serving as a node. An <strong>EC2 instance</strong> is a virtual server in Amazon's Elastic Compute Cloud (<strong>EC2</strong>) for running applications on the Amazon Web Services (AWS) infrastructure. In short an EC2 instance is nothing but a virtual computer.I will be explaining the step by step process to setup a 4 node Hadoop cluster on AWS EC2.</p>
+<p><strong>Setting up Amazon EC2 Instances</strong></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You need to have an amazon web service account to begin with. You can create an account here - <a href="https://aws.amazon.com/">https://aws.amazon.com/</a>Once you have created an account sign in to the console. Once logged in you will see a screen like below;</p>
+<p class="image full">&nbsp;<img src="images/ec2.jpg" alt="" /></p>
+<p>&nbsp;</p>
+<p>From there click on Services and EC2. Then click on the Launch Instance button. The steps are very intuitive and here a gif image of the process;</p>
+<p class="image full">&nbsp;<img src="images/ecinstance.gif" alt="" /></p>
+<p>Please note that you have to save the keypair in a secure location. If you need to access these instances/nodes you will need that keypair. You will see later on in the tutorial how we use the keypair to access the nodes.</p>
+<p>&nbsp;</p>
+<p class="image full"><img src="images/final ec2.jpg" alt="" /></p>
+<p class="image full">&nbsp;Here are Public DNS and Private IPS I created:&nbsp;</p>
+<table style="border-color: #000000; width: 552.067px;">
+<tbody>
+<tr>
+<td style="width: 95px;">
+<p><strong>&nbsp; <br /></strong></p>
+</td>
+<td style="width: 347px;">
+<p><strong>Public DNS/ Host Name <br /></strong></p>
+</td>
+<td style="width: 107.067px;">
+<p><strong>Private IP</strong></p>
+</td>
+</tr>
+<tr>
+<td style="width: 95px;">
+<p><strong>Name Node</strong></p>
+</td>
+<td style="width: 347px;">
+<p>ec2-54-152-158-183.compute-1.amazonaws.com</p>
+</td>
+<td style="width: 107.067px;">
+<p>172.31.26.98</p>
+</td>
+</tr>
+<tr>
+<td style="width: 95px;">
+<p><strong>Data Node 1</strong></p>
+</td>
+<td style="width: 347px;">
+<p>ec2-54-173-155-140.compute-1.amazonaws.com</p>
+</td>
+<td style="width: 107.067px;">
+<p>172.31.23.171</p>
+</td>
+</tr>
+<tr>
+<td style="width: 95px;">
+<p><strong>Data Node 2</strong></p>
+</td>
+<td style="width: 347px;">
+<p>ec2-52-90-101-248.compute-1.amazonaws.com</p>
+</td>
+<td style="width: 107.067px;">
+<p>172.31.31.164</p>
+</td>
+</tr>
+<tr>
+<td style="width: 95px;">
+<p><strong>Data Node 3</strong></p>
+</td>
+<td style="width: 347px;">
+<p>ec2-54-210-48-178.compute-1.amazonaws.com</p>
+</td>
+<td style="width: 107.067px;">
+<p>172.31.28.247</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;Now we have our 4 node cluster ready to go- This is basically 4 machines each with unique ip address. Note down all the 4 <strong>Public DNS</strong> and <strong>Public IP</strong> as we will be using this later in our setup.</p>
+<p>&nbsp;</p>
+<p><strong>Setting up Putty</strong></p>
+<p>&nbsp;<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong>We will be connecting to our cluster using putty. Putty is a free ssh and telnet client for windows. This tool will allow you to securely login to a Unix computer(nodes in our case) and open a terminal to execute shell command. It will basically mimic as if you opened a command prompt/terminal in the Unix machine. Before we can login to the node we need a key. Rememeber we downladed a key pair. This keypair needs to be converted to .ppk file from .pem. <strong>Putty keygen</strong> is used for this - You can download it for free. Here is how you convert the keypair file;</p>
+<p>&nbsp;</p>
+<p class="image full"><img src="images/putty keygen.gif" alt="" /></p>
+<p class="image full">Once the keypair is converted to .ppk file you can use this file to connect to the cluster. Here is how you do that.</p>
+<p class="image full"><img src="images/putty.gif" alt="" /></p>
+<p class="image full">You have to repeat the same process for all three nodes. All uses the same keypair. Once completed putty UI will look like this;</p>
+<p class="image full"><img src="images/putty.jpg" alt="" /></p>
+<p class="image full">Now you can access all 4 nodes using putty;</p>
+<p class="image full"><img src="images/nodes.jpg" alt="" /></p>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>Setting up WinSCP</strong></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="st">WinSCP is an open source free SFTP client and FTP client for Windows. Its main function is the secure file transfer between local and remote computer.</span> It also provides you a graphical user interface to see the folder structure. The settings are similar to that of putty. Here is a gif of the setup;</p>
+<p>&nbsp;</p>
+<p class="image full"><img src="images/winscp.gif" alt="" /></p>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>Setting up passwordless ssh</strong></p>
+<p class="image full"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> I promise this is the last set up we need before we can actually install hadoop and spin up the cluster. This is very important and if not done correctly you will end up getting errors when you spin up the clusters.</p>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;</p>
+<p><strong>Setting up Hadoop</strong></p>
+<p>Finally we are all set to install hadoop!! There are only 9 steps and wouldn't take more than 20 minutes. On all the nodes/instances;</p>
+<ol>
+<li>Update all the packages in the server just to make sure its up to date</li>
+<li>Install java</li>
+<li>Download hadoop</li>
+<li>Untar/unzip the downloaded hadoop package and move to /usr/local/hadoop folder</li>
+<li>Modify hosts file</li>
+<li>Modify .profile file</li>
+<li>Modify the following configuration files that comes with hadoop package:
+<ul>
+<li>hadoop-env.sh</li>
+<li>core-site.xml</li>
+<li>hdfs-site.xml</li>
+<li>slaves</li>
+</ul>
+</li>
+<li>Create hdfs name node and data node folder for name node and data node respectively.</li>
+<li>Format Name node and start the daemons.</li>
+</ol>
+<p>I will go through each step in detail;</p>
+<p>&nbsp;</p>
+<p><strong>Update all the packages</strong></p>
+<p><strong>&nbsp;&nbsp;&nbsp; </strong>Just to make sure all our instances have the latest packages. Run on all four nodes using putty.</p>
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">sudo apt-get update
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>&nbsp;Install java</strong></p>
+<p class="image full"><strong>&nbsp;&nbsp;&nbsp;</strong> This will download and install java developmet kit and once installed you can check the version java -version. Run the command on all four nodes using putty.</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">sudo apt-get install openjdk-8-jdk
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>Download hadoop</strong></p>
+<p class="image full"><strong>&nbsp;&nbsp; </strong>The following code will download hadoop 2.7.1 tar file from the apache website to the download folder in the linux machine. Please make sure the download path is correct as the path can change. Run the command on all four nodes using putty.</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">wget http:// apache.mirrors.tds.net/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz &ndash;P ~/Download
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>&nbsp;Untar/unzip and move the downloaded hadoop package</strong></p>
+<p class="image full">&nbsp;Using the below command in putty untar/unzip the downloaded hadoop package and move it folder /usr/local/hadoop</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">sudo tar zxvf ~/hadoop-* -C /usr/local
+sudo mv /usr/local/hadoop-* /usr/local/hadoop
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>&nbsp;Modify hosts file</strong></p>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>Modify .profile file</strong></p>
+<p class="image full">Modify the .profile file in /home/ubuntu/.profile to set the environment for hadoop. .profile file will be hidden so make sure to unhide the folders.</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;"><span style="color: #888888;">#Hadoop Environment Variables</span>
+<span style="color: #007020;">export </span><span style="color: #996633;">JAVA_HOME</span><span style="color: #333333;">=</span>/usr 
+<span style="color: #007020;">export </span><span style="color: #996633;">PATH</span><span style="color: #333333;">=</span><span style="color: #996633;">$PATH</span>:<span style="color: #996633;">$JAVA_HOME</span>/bin
+<span style="color: #007020;">export </span><span style="color: #996633;">HADOOP_HOME</span><span style="color: #333333;">=</span>/usr/local/hadoop 
+<span style="color: #007020;">export </span><span style="color: #996633;">PATH</span><span style="color: #333333;">=</span><span style="color: #996633;">$PATH</span>:<span style="color: #996633;">$HADOOP_HOME</span>/bin
+<span style="color: #007020;">export </span><span style="color: #996633;">HADOOP_CONF_DIR</span><span style="color: #333333;">=</span>/usr/local/hadoop/etc/hadoop
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p>&nbsp;<strong>Load the variables- just to make the system know about the updates</strong></p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">. ~/.profile
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>Modify the following configuration files</strong></p>
+<p class="image full"><strong>hadoop-env.sh</strong></p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;"><span style="color: #888888;"># The java implementation to use.</span>
+<span style="color: #007020;">export </span><span style="color: #996633;">JAVA_HOME</span><span style="color: #333333;">=</span>/usr
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>core-site.xml</strong></p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;fs.defaultFS&lt;/name&gt;
+    &lt;value&gt;hdfs://ec2-54-210-47-166.compute-1.amazonaws.com:9000&lt;/value&gt;
+  &lt;/property&gt;
+&lt;/configuration&gt;
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>hdfs-site.xml</strong></p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;dfs.replication&lt;/name&gt;
+    &lt;value&gt;3&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;property&gt;
+    &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;
+    &lt;value&gt;file:///usr/local/hadoop/hadoop_data/hdfs/namenode&lt;/value&gt;
+  &lt;/property&gt;
+&lt;/configuration&gt;
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>slaves</strong></p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">datanode1
+datanode2
+datanode3
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>&nbsp;Create hdfs name node and data node folder for name node and data node respectively.</strong></p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">sudo mkdir &ndash;p <span style="color: #996633;">$HADOOP_HOME</span>/hadoop_data/hdfs/namenode
+sudo mkdir &ndash;p <span style="color: #996633;">$HADOOP_HOME</span>/hadoop_data/hdfs/datanode
+</pre>
+</div>
+<p>&nbsp;</p>
+<p>Just to make sure there is no issues with ownership lets change ownership of Hadoop home to Ubuntu</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">sudo chown &ndash;R ubuntu <span style="color: #996633;">$HADOOP_HOME</span>
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;<strong>Format Name node</strong></p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">hdfs namenode-format
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full"><strong>Thats it !!! Yayyyy!!! Now start the hadoop daemons using the following command!</strong></p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;"><span style="color: #996633;">$HADOOP_HOME</span>/sbin/start-dfs.sh
+</pre>
+</div>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;</p>
+
+
+						</section>
+					</div>
+					
+					<!-- Sidebar -->
+					<div id="sidebar" class="4u">
+						<section>
+							<header>
+								<h2>Related Tutorials</h2>
+							</header>
+							<ul class="style">
+								<li>
+									<p class="posted"></p>
+									<a href="../default/index.html"><img src="images/pic04.jpg" alt="" /></a>
+									<p class="text">Hadoop Basics - Get Started with Big Data</p>
+								</li>
+								<li>
+									<p class="posted"></p>
+									<a href="../hadoopvb/hadoopvb.html"><img src="images/pic08.jpg" alt="" /></a>
+									<p class="text">Setting up a 4 node hadoop cluster using Oracle Virtual Box</p>
+								</li>
+								
+							</ul>
+						</section>
+
+
+
+
+					</div>
+					
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Footer -->
+		<div id="featured">
+			<div class="container">
+				<div class="row">
+					<div class="4u">
+						<h2>Previous Tutorial</h2>
+						<a href="#" class="image full"><img src="images/pic01.jpg" alt="" /></a>
+						
+						
+					</div>
+					<div class="4u">
+						<h2>Next Tutorial</h2>
+						<a href="#" class="image full"><img src="images/pic02.jpg" alt="" /></a>
+						
+						
+					</div>
+
+					
+				</div>
+
+
+
+			</div>
+<!-- begin wwww.htmlcommentbox.com -->
+ <div id="HCB_comment_box"><a href="http://www.htmlcommentbox.com">Comment Form</a> is loading comments...</div>
+ <link rel="stylesheet" type="text/css" href="//www.htmlcommentbox.com/static/skins/bootstrap/twitter-bootstrap.css?v=0" />
+ <script type="text/javascript" id="hcb"> /*<!--*/ if(!window.hcb_user){hcb_user={};} (function(){var s=document.createElement("script"), l=hcb_user.PAGE || (""+window.location).replace(/'/g,"%27"), h="//www.htmlcommentbox.com";s.setAttribute("type","text/javascript");s.setAttribute("src", h+"/jread?page="+encodeURIComponent(l).replace("+","%2B")+"&mod=%241%24wq1rdBcg%24mcVps0JPJjlC47SGhid.s%2F"+"&opts=16862&num=10&ts=1482079779746");if (typeof s!="undefined") document.getElementsByTagName("head")[0].appendChild(s);})(); /*-->*/ </script>
+<!-- end www.htmlcommentbox.com -->
+		</div>
+
+
+		
+		
+	</body>
+</html>
