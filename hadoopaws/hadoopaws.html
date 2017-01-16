@@ -144,8 +144,32 @@
 <p class="image full">&nbsp;</p>
 <p class="image full"><strong>Setting up passwordless ssh</strong></p>
 <p class="image full"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> I promise this is the last set up we need before we can actually install hadoop and spin up the cluster. This is very important and if not done correctly you will end up getting errors when you spin up the clusters.</p>
+<p class="image full">First step is to move your keypair file over to name nodes /home/ubuntu/.ssh folder. You can use Winscp for this or use scp from command line. I will also rename the key file to id_rsa . Make sure you change your keypair file name and the namenode host file name accordingly.</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">pscp -i hadoop.ppk hadoop.pem ubuntu@ ec2-54-152-158-183.compute-1.amazonaws.com:/home/ubuntu/.ssh/id_rsa
+</pre>
+</div>
 <p class="image full">&nbsp;</p>
+<p class="image full">Then set the permission level on the /home/ubuntu/.ssh, authorized keys and id_rsa</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">chmod 700 /home/ubuntu/.ssh
+chmod 640 /home/ubunt/.ssh/authorized_keys
+chmod 600 /home/ubuntu/id_rsa
+</pre>
+</div>
 <p class="image full">&nbsp;</p>
+<p class="image full">&nbsp;Now repeat this for all the nodes using winscp or scp(from name node).</p>
+<p class="image full">You can run the following command from name node. Make sure to change datanode1,datanode2 and datanode3 to their respective hostname/Public DNS . We will be changing the hostname from the long Public DNS to simple hostname later in the tutorial.</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;">scp /home/ubuntu/.ssh/id_rsa datanode1:/home/ubuntu/.ssh
+scp /home/ubuntu/.ssh/id_rsa datanode2:/home/ubuntu/.ssh
+scp /home/ubuntu/.ssh/id_rsa datanode3:/home/ubuntu/.ssh
+</pre>
+</div>
+<p class="image full">&nbsp;As promised we are all set to install hadoop now!!</p>
 <p><strong>Setting up Hadoop</strong></p>
 <p>Finally we are all set to install hadoop!! There are only 9 steps and wouldn't take more than 20 minutes. On all the nodes/instances;</p>
 <ol>
