@@ -225,7 +225,17 @@ sudo mv /usr/local/hadoop-* /usr/local/hadoop
 </div>
 <p class="image full">&nbsp;</p>
 <p class="image full"><strong>&nbsp;Modify hosts file</strong></p>
+<p class="image full">As your machine gets started, it will need to know the mapping of some hostnames to <span class="acronym">IP</span> addresses before <span class="acronym">DNS</span> can be referenced. This mapping is kept in the <tt class="filename">/etc/hosts</tt> file. In the absence of a name server, any network program on your system consults this file to determine the <span class="acronym">IP</span> address that corresponds to a host name.</p>
+<p class="image full">So now we will put the ip address, hostname and hostname alias into all 4 nodes. Run the following code on putty on each of the 4 nodes. Make sure to chage alias in the code below to name of your node.</p>
+<!-- HTML generated using hilite.me -->
+<div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
+<pre style="margin: 0; line-height: 125%;"><span style="color: #007020;">echo</span> -e &ldquo;<span style="background-color: #fff0f0;">`</span>hostname -i<span style="background-color: #fff0f0;">`</span> <span style="color: #666666; font-weight: bold; background-color: #fff0f0;">\t</span><span style="background-color: #fff0f0;">`</span>hostname -f<span style="background-color: #fff0f0;">`</span> <span style="color: #666666; font-weight: bold; background-color: #fff0f0;">\t</span>namenode&rdquo; i-address hostname <span style="color: #007020;">alias</span>
+</pre>
+</div>
 <p class="image full">&nbsp;</p>
+<p class="image full">This will return you the IP address, hostname and hostname alias. Once you get all 4 results, copy that into hosts file on all 4 nodes.</p>
+<p class="m6254754871140764012gmail-p1">Now if you run ssh alias in my case ssh datanode1 from namenode using putty it will ask me an authentication. We dont want this so lets change a line in&nbsp; /etc/ssh_config file. Change #StrictHostKeyChecking all to StrictHostKeyChecking no</p>
+<p class="image full">&nbsp;Now you can access any node from any node!!</p>
 <p class="image full">&nbsp;</p>
 <p class="image full"><strong>Modify .profile file</strong></p>
 <p class="image full">Modify the .profile file in /home/ubuntu/.profile to set the environment for hadoop. .profile file will be hidden so make sure to unhide the folders.</p>
@@ -294,6 +304,7 @@ datanode3
 </div>
 <p class="image full">&nbsp;</p>
 <p class="image full"><strong>&nbsp;Create hdfs name node and data node folder for name node and data node respectively.</strong></p>
+<p class="image full">This is the hdfs or the hadoop file system which does all the magic behind.</p>
 <!-- HTML generated using hilite.me -->
 <div style="background: #ffffff; overflow: auto; width: auto; border: solid gray; border-width: .1em .1em .1em .8em; padding: .2em .6em;">
 <pre style="margin: 0; line-height: 125%;">sudo mkdir &ndash;p <span style="color: #996633;">$HADOOP_HOME</span>/hadoop_data/hdfs/namenode
